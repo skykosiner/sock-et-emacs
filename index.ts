@@ -11,6 +11,14 @@ type Message = {
     message: string,
 }
 
+const test: string = "";
+
+test.split("").map((char) => {
+    if (char !== "." || !isNaN(parseInt(char))) {
+        console.log(char);
+    }
+});
+
 function getCommandType(msg: string): Command | null {
     switch (msg.substring(0, 3)) {
         case "!vi":
