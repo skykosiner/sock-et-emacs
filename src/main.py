@@ -1,5 +1,6 @@
 import websocket
 import threading
+import time
 
 from message import Command, Message
 from system_command import SystemCommand
@@ -32,33 +33,54 @@ system_commands = {
     "!change background": SystemCommand("change_background_random", "", 0, ee)
 }
 
-def vimCommannd(message: str) -> None:
-    match message[0:3]:
-        case "!vi" | "!va" | "!vc":
-            ee.emit("vim", Message(command=typeMessages[message[0:3]], message=message))
+def start_in_thread(target, daemon=True):
+    """Helper to start any target function in a daemon thread."""
+    thread = threading.Thread(target=target)
+    thread.daemon = daemon
+    thread.start()
+    return thread
 
-def systemCommand(message: str) -> None:
-    match message:
-        case "asdf" | "!turn off screen" | "!change background" | "!i3 workspace":
-            ee.emit("start-sys", Message(command=typeMessages[message], message=message))
+def command_handler(message: str) -> None:
+    command_prefix = message[:3]
+
+    if command_prefix in typeMessages:
+        command = typeMessages[command_prefix]
+        ee.emit("vim", Message(command=command, message=message))
+    elif message in typeMessages:
+        command = typeMessages[message]
+        ee.emit("start-sys", Message(command=command, message=message))
 
 
 def new_msg(_, message: str) -> None:
+    if len(message) < 3:
+        ee.emit("emit-ws", "It's so over, your message isn't longer then 3 chars.")
+        return
+
     print("Got message from websocket.", message)
-    vimCommannd(message)
+    command_handler(message)
 
 def main():
     tcp = TCP(("localhost", 8080), EchoRequestHandler)
-    t = threading.Thread(target=tcp.serve_forever)
-    t.daemon = True
-    t.start()
-
-    @ee.on("startc-sys")
-    def handle_start_sys(msg: Message, tcp=tcp):
-        syst
+    start_in_thread(tcp.serve_forever)
 
     ws = websocket.WebSocketApp("ws://localhost:42069", on_message=new_msg)
-    ws.run_forever()
+    start_in_thread(ws.run_forever)
+
+    @ee.on("emit-ws")
+    def emit_ws(message: str) -> None:
+        ws.send_text(message)
+
+    @ee.on("start-sys")
+    def start_sys(message: Message) -> None:
+        print(message)
+
+   # Keep the main thread alive
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Shutting down...")
+
 
 if __name__ == "__main__":
     main()
