@@ -13,11 +13,6 @@ def new_msg(ws: websocket.WebSocket, message: str):
     msg = Message(**json_object)
     print(f"WebSocket message: {msg}")
 
-    if msg.command != Command.system_command and len(msg.message) > 5:
-        print("???")
-        ws.send("Message can't be greater then 5 chars")
-        return
-
     ee.emit("ws-msg", msg)
 
 
