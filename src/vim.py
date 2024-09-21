@@ -27,6 +27,7 @@ vim_commands = [
 ]
 
 def insert(input: str) -> str | None:
+    print(len(input))
     for char in input.split(""):
         ascii_code = ord(char)
         if ascii_code < 32 or ascii_code > 127:
@@ -38,15 +39,16 @@ def insert(input: str) -> str | None:
     return None
 
 def vim_command(command: str) -> str | None:
-    if not vim_commands.__contains__("input"):
-        return f"The command {command} is not a valid command."
+    if vim_commands.__contains__(command):
+        return None
 
-    return None
+    return f"The command {command} is not a valid command."
 
 def validate_vim_command(data: Message) -> IsGoodVim:
     error = None
     command_type = data.command
     if command_type == Command.vim_insert or command_type == Command.vim_after:
+        print(insert(data.message))
         error = insert(data.message)
     elif command_type == Command.vim_command:
         error = vim_command(data.message)

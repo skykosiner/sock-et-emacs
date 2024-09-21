@@ -8,6 +8,7 @@ from tcp import TCP, EchoRequestHandler
 from pyee.asyncio import AsyncIOEventEmitter
 
 from utils import get_main_screen
+from vim import validate_vim_command
 
 ee = AsyncIOEventEmitter()
 main_screen = get_main_screen()
@@ -69,6 +70,14 @@ async def main():
     @ee.on("emit-ws")
     def emit_ws(message: str) -> None:
         ws.send_text(message)
+
+    @ee.on("vim")
+    def vim_command(message: Message) -> None:
+        message.message = message.message[4:]
+        valid = validate_vim_command(message)
+
+        if not valid.is_good:
+            ee.emit("emit-ws", valid.error)
 
     @ee.on("system-command")
     def system_command(command: str, msg: Message) -> None:
