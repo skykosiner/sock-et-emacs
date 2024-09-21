@@ -1,15 +1,15 @@
+import asyncio
 import websocket
 import threading
-import time
 
 from message import Command, Message
 from system_command import SystemCommand
 from tcp import TCP, EchoRequestHandler
-from pyee.base import EventEmitter
+from pyee.asyncio import AsyncIOEventEmitter
 
 from utils import get_main_screen
 
-ee = EventEmitter()
+ee = AsyncIOEventEmitter()
 main_screen = get_main_screen()
 
 typeMessages = {
@@ -27,9 +27,9 @@ system_commands = {
     # needs to have qwerty for it to work, doing this will just mess up my
     # keyboard, won't turn it into qwerty though. Either way it's still more or
     # less imposible for me to type
-    "asdf": SystemCommand("setxbmap -layout real-prog-dvorak", "setxbmap -layout us", 3000, ee),
-    "!turn off screen": SystemCommand(f"xrandr --output {main_screen} --brightness 0.05", f"xrandr --output {main_screen} --brightness 1", 5000, ee),
-    "!i3 worskpace": SystemCommand("i3 workspace 69", "", 0, ee),
+    "asdf": SystemCommand("setxbmap -layout real-prog-dvorak", "setxbmap -layout us", 3, ee),
+    "!turn off screen": SystemCommand(f"xrandr --output {main_screen} --brightness 0.05", f"xrandr --output {main_screen} --brightness 1", 5, ee),
+    "!i3 workspace": SystemCommand("i3 workspace 69", "", 0, ee),
     "!change background": SystemCommand("change_background_random", "", 0, ee)
 }
 
@@ -50,7 +50,6 @@ def command_handler(message: str) -> None:
         command = typeMessages[message]
         ee.emit("start-sys", Message(command=command, message=message))
 
-
 def new_msg(_, message: str) -> None:
     if len(message) < 3:
         ee.emit("emit-ws", "It's so over, your message isn't longer then 3 chars.")
@@ -59,7 +58,8 @@ def new_msg(_, message: str) -> None:
     print("Got message from websocket.", message)
     command_handler(message)
 
-def main():
+async def main():
+    current_loop = asyncio.get_event_loop()
     tcp = TCP(("localhost", 8080), EchoRequestHandler)
     start_in_thread(tcp.serve_forever)
 
@@ -70,18 +70,21 @@ def main():
     def emit_ws(message: str) -> None:
         ws.send_text(message)
 
+    @ee.on("system-command")
+    def system_command(command: str, msg: Message) -> None:
+        print(command, msg)
+
     @ee.on("start-sys")
     def start_sys(message: Message) -> None:
-        print(message)
+        if message.command == Command.system_command:
+            command = system_commands[message.message]
+            if command:
+                asyncio.ensure_future(command.add(message), loop=current_loop)
 
-   # Keep the main thread alive
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print("Shutting down...")
+    while True:
+     await asyncio.sleep(1)  # Keep the event loop runnin:w
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
 

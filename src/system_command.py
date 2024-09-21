@@ -1,10 +1,10 @@
 import asyncio
 
-from pyee.base import EventEmitter
+from pyee.asyncio import AsyncIOEventEmitter
 from message import Message
 
 class SystemCommand:
-    def __init__(self, start_command: str, stop_command: str, timer: int, ee: EventEmitter) -> None:
+    def __init__(self, start_command: str, stop_command: str, timer: int, ee: AsyncIOEventEmitter) -> None:
         self.start_command = start_command
         self.stop_command = stop_command
         self.timer = timer
@@ -12,9 +12,10 @@ class SystemCommand:
         self.stop_time = 0
         self.task = None
 
-    async def add(self, msg: Message) -> bool | None:
+    async def add(self, msg: Message) -> None:
         if len(self.stop_command) <= 0:
-            return self.ee.emit("system-command", self.start_command, msg)
+            self.ee.emit("system-command", self.start_command, msg)
+            return
 
         now = asyncio.get_event_loop().time()
         if now > self.stop_time:
