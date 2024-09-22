@@ -31,6 +31,6 @@ class TCP(TCPServer):
     def send_all(self, data: bytearray) -> None:
         for connection in active_connections:
             try:
-                connection.sendall(data)
+                connection.send(data)
             except Exception as e:
                 print(f"Error sending message to TCP client: {e}")

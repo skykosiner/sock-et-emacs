@@ -1,29 +1,11 @@
 local conection = vim.uv.new_tcp()
 
---- Enum for Command values
----@enum Command
-local Command = {
-    vim_insert = 0,    --- Insert mode in Vim
-    vim_normal = 1,    --- Normal mode in Vim
-    system_command = 2 --- System-level command
+local command_type = {
+    [0] = "vim_insert",
+    [1] = "vim_after",
+    [2] = "vim_command",
+    [3] = "system_command",
 }
-
----@class message
----@field public command Command  -- Using the Command enum
----@field public message string   -- A string message
-local Message = {}
-Message.__index = Message
-
---- Constructor for Message class
----@param command Command
----@param message string
----@return message
-function Message:new(command, message)
-    local obj = setmetatable({}, self)
-    obj.command = command
-    obj.message = message
-    return obj
-end
 
 function START()
     conection:connect("127.0.0.1", 8080, function(err)
@@ -35,15 +17,11 @@ function START()
         end
 
         vim.uv.read_start(conection, vim.schedule_wrap(function(_, chunk)
-            local json_data = vim.json.decode(chunk)
-            local msg = Message:new(json_data.command, json_data.message)
-
-            if msg.command == Command.vim_insert then
-                vim.cmd("silent norm i" .. msg.message)
-            elseif msg.command == Command.vim_normal then
-                vim.cmd("silent norm " .. msg.message)
-            elseif msg.command == Command.system_command then
-                vim.cmd("silent !" .. msg.message)
+            if chunk then
+                local type = command_type[string.byte(chunk, 1)]
+                local data = string.sub(chunk, 2)
+                print(data)
+                vim.cmd(data)
             end
         end))
     end)

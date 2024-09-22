@@ -4,6 +4,7 @@ import websocket
 import threading
 
 from command import Command
+from get_data import get_data
 from message import CommandType, Message
 from system_command import SystemCommand
 from tcp import TCP, EchoRequestHandler
@@ -74,18 +75,21 @@ async def main():
         ws.send_text(message)
 
     @ee.on("vim")
-    def vim_command(message: Message) -> None:
+    def vim_command(message: Message, tcp=tcp) -> None:
         valid = validate_vim_command(message)
         if not valid.is_good:
             ee.emit("emit-ws", valid.error)
             return
 
-        buffer = command.reset().set_type(message.command).set_data(bytes(message.message_without_command(), "ascii")).buffer
+        buffer = command.reset().set_type(message.command).set_data(get_data(message)).buffer
+        tcp.send_all(buffer)
         print(f"Sendning vim {message.command} with {message.message_without_command()}")
 
     @ee.on("system-command")
-    def system_command(command: str, msg: Message) -> None:
-        print(command, msg)
+    def system_command(cmd: str, message: Message) -> None:
+        buffer = command.reset().set_type(message.command).set_data(bytes(f"silent! !{cmd}", "ascii")).buffer
+        tcp.send_all(buffer)
+        print(f"Sending system command {cmd}.")
 
     @ee.on("start-sys")
     def start_sys(message: Message) -> None:
