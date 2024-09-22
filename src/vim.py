@@ -11,15 +11,17 @@ vim_commands = [
     "zz", ">>", "<<", "_", "v", "V", "A", "I", "J", "u",
 ]
 
-def insert(input: str, error_dict: dict) -> None:
+def insert(input: str, error_dict: dict) -> str:
     for char in list(input):
         ascii_code = ord(char)
         if ascii_code < 32 or ascii_code > 127:
             error_dict['error'] = f"Invalid ASCII char {char}.... How did that even happen?"
-            return
+            return input
 
     if len(input) > 5:
         input = input[:5]
+
+    return input
 
 def vim_command(command: str, error_dict: dict) -> None:
     if command not in vim_commands:
@@ -30,8 +32,8 @@ def validate_vim_command(data: Message) -> IsGoodVim:
 
     command_type = data.command
     if command_type in (CommandType.vim_insert, CommandType.vim_after):
-        insert(data.message_without_command(), error_dict)
+        data.message = insert(data.message, error_dict)
     elif command_type == CommandType.vim_command:
-        vim_command(data.message_without_command(), error_dict)
+        vim_command(data.message, error_dict)
 
     return IsGoodVim(is_good=error_dict['error'] is None, error=error_dict['error'])

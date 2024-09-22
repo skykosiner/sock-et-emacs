@@ -75,6 +75,7 @@ async def main():
 
     @ee.on("vim")
     def vim_command(message: Message, tcp=tcp) -> None:
+        message.message = message.message_without_command()
         valid = validate_vim_command(message)
         if not valid.is_good:
             ee.emit("emit-ws", valid.error)
@@ -82,7 +83,7 @@ async def main():
 
         buffer = command.reset().set_type(message.command).set_data(get_data(message)).buffer
         tcp.send_all(buffer)
-        print(f"Sendning vim {message.command} with {message.message_without_command()}")
+        print(f"Sendning vim {message.command} with {message.message}")
 
     @ee.on("system-command")
     def system_command(cmd: str, message: Message) -> None:
