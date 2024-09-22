@@ -1,8 +1,9 @@
+# TODO: WE NEED BETTER LOGGING
 import asyncio
 import websocket
 import threading
 
-from message import Command, Message
+from message import CommandType, Message
 from system_command import SystemCommand
 from tcp import TCP, EchoRequestHandler
 from pyee.asyncio import AsyncIOEventEmitter
@@ -14,13 +15,13 @@ ee = AsyncIOEventEmitter()
 main_screen = get_main_screen()
 
 typeMessages = {
-    "!vi": Command.vim_insert,
-    "!va": Command.vim_after,
-    "!vc": Command.vim_command,
-    "asdf": Command.system_command,
-    "!turn off screen": Command.system_command,
-    "!change background": Command.system_command,
-    "!i3 workspace": Command.system_command
+    "!vi": CommandType.vim_insert,
+    "!va": CommandType.vim_after,
+    "!vc": CommandType.vim_command,
+    "asdf": CommandType.system_command,
+    "!turn off screen": CommandType.system_command,
+    "!change background": CommandType.system_command,
+    "!i3 workspace": CommandType.system_command
 }
 
 system_commands = {
@@ -56,7 +57,6 @@ def new_msg(_, message: str) -> None:
         ee.emit("emit-ws", "It's so over, your message isn't longer then 3 chars.")
         return
 
-    print("Got message from websocket.", message)
     command_handler(message)
 
 async def main():
@@ -73,11 +73,13 @@ async def main():
 
     @ee.on("vim")
     def vim_command(message: Message) -> None:
-        message.message = message.message[4:]
         valid = validate_vim_command(message)
 
         if not valid.is_good:
             ee.emit("emit-ws", valid.error)
+            return
+
+        print(f"Sendning vim {message.command} with {message.message}")
 
     @ee.on("system-command")
     def system_command(command: str, msg: Message) -> None:
@@ -85,7 +87,7 @@ async def main():
 
     @ee.on("start-sys")
     def start_sys(message: Message) -> None:
-        if message.command == Command.system_command:
+        if message.command == CommandType.system_command:
             command = system_commands[message.message]
             if command:
                 asyncio.ensure_future(command.add(message), loop=current_loop)

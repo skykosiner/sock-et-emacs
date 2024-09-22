@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from message import Command, Message
+from message import CommandType, Message
 
 @dataclass
 class IsGoodVim:
@@ -47,11 +47,11 @@ def vim_command(command: str) -> str | None:
 def validate_vim_command(data: Message) -> IsGoodVim:
     error = None
     command_type = data.command
-    if command_type == Command.vim_insert or command_type == Command.vim_after:
+    if command_type == CommandType.vim_insert or command_type == CommandType.vim_after:
         print(insert(data.message))
-        error = insert(data.message)
-    elif command_type == Command.vim_command:
-        error = vim_command(data.message)
+        error = insert(data.message_without_command())
+    elif command_type == CommandType.vim_command:
+        error = vim_command(data.message_without_command())
 
     if error:
         return IsGoodVim(is_good=False, error=error)
