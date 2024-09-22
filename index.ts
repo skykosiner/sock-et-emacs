@@ -9,7 +9,6 @@ ws.on("error", (err) => {
 
 ws.on("connection", (socketItToMeBBG) => {
     connections.push(socketItToMeBBG);
-
     socketItToMeBBG.on("message", (message) => {
         connections.map(con => {
             if (con != socketItToMeBBG) {

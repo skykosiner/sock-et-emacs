@@ -28,9 +28,9 @@ class TCP(TCPServer):
         self.allow_reuse_address = True
         super().__init__(server_address, handler_class)
 
-    def send_all(self, message: Message) -> None:
+    def send_all(self, data: bytearray) -> None:
         for connection in active_connections:
             try:
-                connection.sendall(json.dumps(message.to_dict()).encode("utf-8"))
+                connection.sendall(data)
             except Exception as e:
                 print(f"Error sending message to TCP client: {e}")

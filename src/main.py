@@ -3,6 +3,7 @@ import asyncio
 import websocket
 import threading
 
+from command import Command
 from message import CommandType, Message
 from system_command import SystemCommand
 from tcp import TCP, EchoRequestHandler
@@ -35,6 +36,7 @@ system_commands = {
     "!change background": SystemCommand("change_background_random", "", 0, ee)
 }
 
+command = Command()
 def start_in_thread(target, daemon=True):
     """Helper to start any target function in a daemon thread."""
     thread = threading.Thread(target=target)
@@ -74,12 +76,12 @@ async def main():
     @ee.on("vim")
     def vim_command(message: Message) -> None:
         valid = validate_vim_command(message)
-
         if not valid.is_good:
             ee.emit("emit-ws", valid.error)
             return
 
-        print(f"Sendning vim {message.command} with {message.message}")
+        buffer = command.reset().set_type(message.command).set_data(bytes(message.message_without_command(), "ascii")).buffer
+        print(f"Sendning vim {message.command} with {message.message_without_command()}")
 
     @ee.on("system-command")
     def system_command(command: str, msg: Message) -> None:
@@ -98,4 +100,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-

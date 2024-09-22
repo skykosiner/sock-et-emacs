@@ -13,6 +13,10 @@ class Command:
     def __init__(self) -> None:
         self.buffer = bytearray(128)
 
+    def reset(self):
+        self.buffer = bytearray(128)
+        return self
+
     def set_type(self, type: CommandType):
         self.buffer[self._type_idx] = type
         return self

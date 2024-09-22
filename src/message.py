@@ -15,16 +15,5 @@ class Message:
     command: CommandType
     message: str
 
-    def to_dict(self):
-        return {
-            "command": self.command,
-            "message": self.message
-        }
-
     def message_without_command(self) -> str:
         return self.message[4:]
-
-    @classmethod
-    def from_dict(cls, data):
-        command = CommandType[data['command']]  # Convert string back to enum
-        return cls(command=command, message=data['message'])
