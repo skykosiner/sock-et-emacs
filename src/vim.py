@@ -4,58 +4,34 @@ from message import CommandType, Message
 @dataclass
 class IsGoodVim:
     is_good: bool
-    error: str
+    error: str | None
 
 vim_commands = [
-        "dd",
-        "gg",
-        "G",
-        "h",
-        "j",
-        "k",
-        "l",
-        "o",
-        "O",
-        "zz",
-        ">>",
-        "<<",
-        "_",
-        "v",
-        "V",
-        "A",
-        "I",
-        "J",
-        "u",
+    "dd", "gg", "G", "h", "j", "k", "l", "o", "O",
+    "zz", ">>", "<<", "_", "v", "V", "A", "I", "J", "u",
 ]
 
-def insert(input: str) -> str:
+def insert(input: str, error_dict: dict) -> None:
     for char in list(input):
         ascii_code = ord(char)
         if ascii_code < 32 or ascii_code > 127:
-            return f"Inavlid ascii char {char}.... How did that even happen?"
+            error_dict['error'] = f"Invalid ASCII char {char}.... How did that even happen?"
+            return
 
     if len(input) > 5:
         input = input[:5]
 
-
-    return ""
-
-def vim_command(command: str) -> str:
-    if vim_commands.__contains__(command):
-        return ""
-
-    return f"The command {command} is not a valid command."
+def vim_command(command: str, error_dict: dict) -> None:
+    if command not in vim_commands:
+        error_dict['error'] = f"The command {command} is not a valid command."
 
 def validate_vim_command(data: Message) -> IsGoodVim:
-    error = ""
+    error_dict = {'error': None}
+
     command_type = data.command
-    if command_type == CommandType.vim_insert or command_type == CommandType.vim_after:
-        error = insert(data.message_without_command())
-        print(error)
+    if command_type in (CommandType.vim_insert, CommandType.vim_after):
+        insert(data.message_without_command(), error_dict)
     elif command_type == CommandType.vim_command:
-        error = vim_command(data.message_without_command())
+        vim_command(data.message_without_command(), error_dict)
 
-    if len(error) > 0:
-        return IsGoodVim(is_good=False, error=error)
-
-    return IsGoodVim(is_good=True, error=None)
+    return IsGoodVim(is_good=error_dict['error'] is None, error=error_dict['error'])
