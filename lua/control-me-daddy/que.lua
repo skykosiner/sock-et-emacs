@@ -72,3 +72,5 @@ function que:deque()
 
     return node.value
 end
+
+return que

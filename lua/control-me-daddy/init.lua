@@ -1,13 +1,21 @@
+local que = require "control-me-daddy.que"
+
 local conection = vim.uv.new_tcp()
+local command_que = que:new()
 
-local command_type = {
-    [0] = "vim_insert",
-    [1] = "vim_after",
-    [2] = "vim_command",
-    [3] = "system_command",
-}
+local M = {}
 
-function START()
+local function process_que()
+    while command_que.length > 0 do
+        local message = command_que:deque()
+
+        if message then
+            vim.cmd(message.message)
+        end
+    end
+end
+
+function M.START()
     conection:connect("127.0.0.1", 8080, function(err)
         if err then
             conection:close()
@@ -18,14 +26,24 @@ function START()
 
         vim.uv.read_start(conection, vim.schedule_wrap(function(_, chunk)
             if chunk then
-                local type = command_type[string.byte(chunk, 1)]
-                local data = string.sub(chunk, 2)
-                vim.cmd(data)
+                ---@type Message
+                local message = {
+                    command = string.byte(chunk, 1),
+                    message = string.sub(chunk, 2)
+                }
+
+                command_que:enque(message)
             end
+        end))
+
+        vim.loop.new_timer():start(0, 5000, vim.schedule_wrap(function()
+            process_que()
         end))
     end)
 end
 
-function STOP()
+function M.STOP()
     conection:shutdown()
 end
+
+return M
