@@ -20,7 +20,6 @@ function START()
             if chunk then
                 local type = command_type[string.byte(chunk, 1)]
                 local data = string.sub(chunk, 2)
-                print(data)
                 vim.cmd(data)
             end
         end))

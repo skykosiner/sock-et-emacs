@@ -1,6 +1,5 @@
 from message import CommandType, Message
 
-
 def get_data(data: Message) -> bytes:
     type = data.command
     out = ""

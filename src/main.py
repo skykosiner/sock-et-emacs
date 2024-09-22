@@ -1,4 +1,3 @@
-# TODO: WE NEED BETTER LOGGING
 import asyncio
 import websocket
 import threading
@@ -31,7 +30,7 @@ system_commands = {
     # needs to have qwerty for it to work, doing this will just mess up my
     # keyboard, won't turn it into qwerty though. Either way it's still more or
     # less imposible for me to type
-    "asdf": SystemCommand("setxbmap -layout real-prog-dvorak", "setxbmap -layout us", 3, ee),
+    "asdf": SystemCommand("setxkbmap -layout real-prog-dvorak", "setxkbmap -layout us", 3, ee),
     "!turn off screen": SystemCommand(f"xrandr --output {main_screen} --brightness 0.05", f"xrandr --output {main_screen} --brightness 1", 5, ee),
     "!i3 workspace": SystemCommand("i3 workspace 69", "", 0, ee),
     "!change background": SystemCommand("change_background_random", "", 0, ee)
