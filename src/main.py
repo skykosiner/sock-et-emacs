@@ -1,8 +1,10 @@
 import asyncio
 import websocket
 import threading
+import logging
 
 from command import Command
+from flask import Flask
 from get_data import get_data
 from message import CommandType, Message
 from system_command import SystemCommand
@@ -11,6 +13,10 @@ from pyee.asyncio import AsyncIOEventEmitter
 
 from utils import get_main_screen
 from vim import validate_vim_command
+
+# Disable Flask logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 ee = AsyncIOEventEmitter()
 main_screen = get_main_screen()
@@ -69,6 +75,9 @@ async def main():
     ws = websocket.WebSocketApp("ws://localhost:42069", on_message=new_msg)
     start_in_thread(ws.run_forever)
 
+    app = Flask(__name__, static_folder='../static/', static_url_path='')
+    start_in_thread(lambda: app.run("127.0.0.1", 42070))
+
     @ee.on("emit-ws")
     def emit_ws(message: str) -> None:
         ws.send_text(message)
@@ -83,13 +92,13 @@ async def main():
 
         buffer = command.reset().set_type(message.command).set_data(get_data(message)).buffer
         tcp.send_all(buffer)
-        print(f"Sendning vim {message.command} with {message.message}")
+        print(f"\033[32mSendning vim {message.command} with {message.message}\033[0m")
 
     @ee.on("system-command")
-    def system_command(cmd: str, message: Message) -> None:
+    def system_command(cmd: str, message: Message, tcp=tcp) -> None:
         buffer = command.reset().set_type(message.command).set_data(bytes(f"silent! !{cmd}", "ascii")).buffer
         tcp.send_all(buffer)
-        print(f"Sending system command {cmd}.")
+        print(f"\033[33mSending system command {cmd}.\033[0m")
 
     @ee.on("start-sys")
     def start_sys(message: Message) -> None:
@@ -98,9 +107,12 @@ async def main():
             if command:
                 asyncio.ensure_future(command.add(message), loop=current_loop)
 
+    @app.route("/")
+    def index():
+        return app.send_static_file("index.html")
+
     while True:
      await asyncio.sleep(1)  # Keep the event loop runnin:w
-
 
 if __name__ == "__main__":
     asyncio.run(main())

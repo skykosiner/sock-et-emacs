@@ -1,3 +1,3 @@
-- [ ] Better logging system
-- [ ] Some sort of que and add like 5 seconds in between each command
+- [x] Better logging system
+- [x] Some sort of que and add like 5 seconds in between each command
 - [ ] Add in some more system commands

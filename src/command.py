@@ -23,7 +23,7 @@ class Command:
 
     def set_data(self, data: bytes):
         if len(data) > 127:
-            print("It's Joever, data is over 127.")
+            print("\033[31mIt's Joever, data is over 127.\033[0m")
             os.error(-1)
 
         self.buffer[self._data_idx:self._data_idx+len(data)] = data

@@ -1,8 +1,5 @@
-import json
 import socket
 from socketserver import StreamRequestHandler, TCPServer
-
-from message import Message
 
 active_connections: list[socket.socket] = []
 
@@ -17,7 +14,7 @@ class EchoRequestHandler(StreamRequestHandler):
                 msg = self.request.recv(1024).decode()
                 if not msg:
                     break
-                print(f"Received from TCP: {msg}")
+                print(f"\033[31mReceived from TCP: {msg}\33[0m")
                 self.request.sendall(msg.encode())
         finally:
             # Remove the connection when done
@@ -33,4 +30,4 @@ class TCP(TCPServer):
             try:
                 connection.send(data)
             except Exception as e:
-                print(f"Error sending message to TCP client: {e}")
+                print(f"\33[31mError sending message to TCP client: {e}\33[0m")
