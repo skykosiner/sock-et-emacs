@@ -75,7 +75,7 @@ async def main():
     ws = websocket.WebSocketApp("ws://localhost:42069", on_message=new_msg)
     start_in_thread(ws.run_forever)
 
-    app = Flask(__name__, static_folder='../static/', static_url_path='')
+    app = Flask(__name__, static_folder='static/', static_url_path='')
     start_in_thread(lambda: app.run("127.0.0.1", 42070))
 
     @ee.on("emit-ws")
