@@ -9,6 +9,7 @@
 code {
     background-color: #F1F1F1;
     padding: 0.3rem;
+    font-family: monospace;
 }
 
 li {
@@ -31,6 +32,11 @@ li {
     padding: 0.5rem;
     border: none;
     cursor: pointer;
+    transition: 0.3s ease all;
+}
+
+.buttons>button:hover {
+    transform: scale(1.1);
 }
 
 .messageForm {
@@ -44,8 +50,13 @@ li {
 }
 
 .messageForm>input {
+    transition: 0.3s ease all;
     text-align: center;
     background-color: #F1F1F1;
     padding: 1rem;
     border: none;
+}
+
+.messageForm>input:hover {
+    transform: scale(1.1);
 }
