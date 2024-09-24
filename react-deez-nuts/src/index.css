@@ -11,6 +11,10 @@ code {
     padding: 0.3rem;
 }
 
+li {
+    margin-bottom: 0.9rem;
+}
+
 .center {
     display: flex;
     justify-content: center;
@@ -27,4 +31,21 @@ code {
     padding: 0.5rem;
     border: none;
     cursor: pointer;
+}
+
+.messageForm {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+}
+
+.messageForm>input:first-child {
+    margin-bottom: 0.5rem;
+}
+
+.messageForm>input {
+    text-align: center;
+    background-color: #F1F1F1;
+    padding: 1rem;
+    border: none;
 }

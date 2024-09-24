@@ -22,7 +22,8 @@ export default function App(): JSX.Element {
 
                 {showHelp && (
                     <div>
-                        <h3>Vim Normal Mode Commands</h3>
+                        <h2>Vim Commands</h2>
+                        <h3 style={{ paddingTop: "0.5rem" }}>Vim Normal Mode Commands</h3>
                         <ul>
                             {vimCommands.map(cmd => (
                                 <li>{cmd}</li>
@@ -32,6 +33,14 @@ export default function App(): JSX.Element {
                         <h3 style={{ paddingTop: "0.5rem" }}>Inserting Into Vim Commands</h3>
                         <p>Insert into vim with <code>!vi</code>. Followed by the text you want to insert</p>
                         <p>Insert after into vim with <code>!va</code>. Followed by the text you want to insert</p>
+
+                        <h2 style={{ paddingBottom: "0.5rem", paddingTop: "0.5rem" }}>System Commands</h2>
+                        <ul>
+                            <li><code>!turn off screen</code> turns off my main screen for 5 seconds</li>
+                            <li><code>!change background</code> changes my background to a random one in my backgrounds folder</li>
+                            <li><code>!i3 workspace</code> switches my i3 workspace to number 69 (nice)</li>
+                            <li><code>asdf</code> changes my keyboard to utter chaos for 3 seconds so I can't type</li>
+                        </ul>
                     </div>
                 )}
 

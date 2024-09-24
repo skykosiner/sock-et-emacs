@@ -16,11 +16,9 @@ export default function NewMessage(): JSX.Element {
     }
 
     return (
-        <div>
-            <form onSubmit={sendMessageForm}>
-                <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
-                <input type="submit" value="Send Message" />
-            </form>
-        </div>
+        <form onSubmit={sendMessageForm} className="messageForm">
+            <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Message: " />
+            <input type="submit" value="Send Message" />
+        </form>
     );
 }
