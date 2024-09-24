@@ -1,10 +1,8 @@
 import asyncio
 import websocket
 import threading
-import logging
 
 from command import Command
-from flask import Flask
 from get_data import get_data
 from message import CommandType, Message
 from system_command import SystemCommand
@@ -13,10 +11,6 @@ from pyee.asyncio import AsyncIOEventEmitter
 
 from utils import get_main_screen
 from vim import validate_vim_command
-
-# Disable Flask logging
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
 
 ee = AsyncIOEventEmitter()
 main_screen = get_main_screen()
@@ -72,11 +66,12 @@ async def main():
     tcp = TCP(("localhost", 8080), EchoRequestHandler)
     start_in_thread(tcp.serve_forever)
 
-    ws = websocket.WebSocketApp("ws://localhost:42069", on_message=new_msg)
+    # ws = websocket.WebSocketApp("wss://skykosiner.com:8080", on_message=new_msg)
+    ws = websocket.WebSocketApp("ws://127.0.0.1:42069", on_message=new_msg)
     start_in_thread(ws.run_forever)
 
-    app = Flask(__name__, static_folder='static/', static_url_path='')
-    start_in_thread(lambda: app.run("127.0.0.1", 42070))
+    # app = Flask(__name__, static_folder='static/', static_url_path='')
+    # start_in_thread(lambda: app.run("127.0.0.1", 42070))
 
     @ee.on("emit-ws")
     def emit_ws(message: str) -> None:
@@ -107,9 +102,9 @@ async def main():
             if command:
                 asyncio.ensure_future(command.add(message), loop=current_loop)
 
-    @app.route("/")
-    def index():
-        return app.send_static_file("index.html")
+    # @app.route("/")
+    # def index():
+        # return app.send_static_file("index.html")
 
     while True:
      await asyncio.sleep(1)  # Keep the event loop runnin:w
