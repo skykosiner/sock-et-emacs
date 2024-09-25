@@ -3,6 +3,7 @@ import NewMessage from "./Components/NewMessage";
 
 export default function App(): JSX.Element {
     const [showHelp, setShowHelp] = useState<boolean>(false);
+
     const vimCommands = [
         "dd", "gg", "G", "h", "j", "k", "l", "o", "O",
         "zz", ">>", "<<", "_", "v", "V", "A", "I", "J", "u",
@@ -14,9 +15,9 @@ export default function App(): JSX.Element {
                 <h1 style={{ textAlign: "center" }}>Control Me Daddy</h1>
 
                 <div className="buttons">
-                    <button>Flicker Ligths</button>
-                    <button>Turn Me On 😳</button>
-                    <button>That's What She Said</button>
+                    <a>Flicker Ligths</a>
+                    <a>Turn Me On 😳</a>
+                    <a>That's What She Said</a>
                     <button onClick={() => setShowHelp(!showHelp)}>Message Commands - Help {showHelp && <p>Hide</p>}</button>
                 </div>
 
