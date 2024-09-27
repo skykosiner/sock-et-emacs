@@ -117,13 +117,15 @@ async def main():
         asyncio.ensure_future(non_ws_sytem_commands["elvis"].add(Message(CommandType.elvis, "")), loop=current_loop)
         return ""
 
-    @app.route("/lights-red")
-    def lights_red():
-        return ""
-
     @app.route("/ceiling-lights-toggle")
     def ceiling_lights_toggle():
+         home_assistant.toggle_ceiling_lights()
          return ""
+
+    @app.route("/lights-red")
+    def lights_red():
+        home_assistant.set_lights_red()
+        return ""
 
     while True:
      await asyncio.sleep(1)  # Keep the event loop runnin:w
