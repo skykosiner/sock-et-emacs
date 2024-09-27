@@ -1,15 +1,16 @@
 import asyncio
 import websocket
-import threading
+import dotenv
 
 from command import Command
+from flask import Flask
 from get_data import get_data
 from message import CommandType, Message
 from system_command import SystemCommand
 from tcp import TCP, EchoRequestHandler
 from pyee.asyncio import AsyncIOEventEmitter
 
-from utils import get_main_screen
+from utils import get_main_screen, start_in_thread
 from vim import validate_vim_command
 
 ee = AsyncIOEventEmitter()
@@ -36,13 +37,11 @@ system_commands = {
     "!change background": SystemCommand("change_background_random", "", 0, ee)
 }
 
+non_ws_sytem_commands = {
+    "elvis": SystemCommand("/home/sky/.local/bin/elvis", "", 0, ee),
+}
+
 command = Command()
-def start_in_thread(target, daemon=True):
-    """Helper to start any target function in a daemon thread."""
-    thread = threading.Thread(target=target)
-    thread.daemon = daemon
-    thread.start()
-    return thread
 
 def command_handler(message: str) -> None:
     command_prefix = message[:3]
@@ -62,6 +61,8 @@ def new_msg(_, message: str) -> None:
     command_handler(message)
 
 async def main():
+    dotenv.load_dotenv()
+
     current_loop = asyncio.get_event_loop()
     tcp = TCP(("localhost", 8080), EchoRequestHandler)
     start_in_thread(tcp.serve_forever)
@@ -70,8 +71,8 @@ async def main():
     ws = websocket.WebSocketApp("ws://127.0.0.1:42069", on_message=new_msg)
     start_in_thread(ws.run_forever)
 
-    # app = Flask(__name__, static_folder='static/', static_url_path='')
-    # start_in_thread(lambda: app.run("127.0.0.1", 42070))
+    app = Flask(__name__)
+    start_in_thread(lambda: app.run("127.0.0.1", 8081))
 
     @ee.on("emit-ws")
     def emit_ws(message: str) -> None:
@@ -102,9 +103,15 @@ async def main():
             if command:
                 asyncio.ensure_future(command.add(message), loop=current_loop)
 
-    # @app.route("/")
-    # def index():
-        # return app.send_static_file("index.html")
+    # TODO: There must be a better way to define these routes then putting them all in the main function, it looks ugly
+    @app.route("/elvis")
+    def elvis():
+        asyncio.ensure_future(non_ws_sytem_commands["elvis"].add(Message(CommandType.elvis, "")), loop=current_loop)
+        return ""
+
+    @app.route("/ceiling-lights-toggle")
+    def ceiling_lights_toggle():
+         return ""
 
     while True:
      await asyncio.sleep(1)  # Keep the event loop runnin:w

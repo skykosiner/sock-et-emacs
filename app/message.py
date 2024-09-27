@@ -6,6 +6,7 @@ class CommandType(Enum):
     vim_after = 1
     vim_command = 2
     system_command = 3
+    elvis = 4
 
     def __index__(self):
         return self.value
