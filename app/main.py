@@ -1,7 +1,9 @@
 import asyncio
+import os
 import websocket
 import dotenv
 
+from homeassitant import HomeAssistant
 from command import Command
 from flask import Flask
 from get_data import get_data
@@ -15,6 +17,7 @@ from vim import validate_vim_command
 
 ee = AsyncIOEventEmitter()
 main_screen = get_main_screen()
+command = Command()
 
 typeMessages = {
     "!vi": CommandType.vim_insert,
@@ -41,8 +44,6 @@ non_ws_sytem_commands = {
     "elvis": SystemCommand("/home/sky/.local/bin/elvis", "", 0, ee),
 }
 
-command = Command()
-
 def command_handler(message: str) -> None:
     command_prefix = message[:3]
 
@@ -62,6 +63,13 @@ def new_msg(_, message: str) -> None:
 
 async def main():
     dotenv.load_dotenv()
+    url, token = os.getenv("HOME_ASSISTANT_URL"), os.getenv("HOME_ASSISTANT_TOKEN")
+
+    if not url or not token:
+        print("Url and or token not found, it's joever")
+        exit(0x45)
+
+    home_assistant = HomeAssistant(url, token)
 
     current_loop = asyncio.get_event_loop()
     tcp = TCP(("localhost", 8080), EchoRequestHandler)
@@ -107,6 +115,10 @@ async def main():
     @app.route("/elvis")
     def elvis():
         asyncio.ensure_future(non_ws_sytem_commands["elvis"].add(Message(CommandType.elvis, "")), loop=current_loop)
+        return ""
+
+    @app.route("/lights-red")
+    def lights_red():
         return ""
 
     @app.route("/ceiling-lights-toggle")
