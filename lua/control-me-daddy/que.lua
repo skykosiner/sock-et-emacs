@@ -3,7 +3,8 @@ CommandType = {
     vim_insert = 0,
     vim_after = 1,
     vim_command = 2,
-    system_command = 3
+    system_command = 3,
+    elvis = 4
 }
 
 ---@class Message
@@ -68,6 +69,10 @@ function que:deque()
 
     if self.length == 0 then
         self.tail = nil
+    end
+
+    if node == nil then
+        return nil
     end
 
     return node.value

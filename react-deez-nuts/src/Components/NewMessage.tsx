@@ -5,7 +5,7 @@ import { useWebSocket } from "react-use-websocket/dist/lib/use-websocket";
 export default function NewMessage(): JSX.Element {
     const [newMessage, setNewMessage] = useState<string>("");
     // const { sendMessage, readyState } = useWebSocket("wss://skykosiner.com:8080");
-    const { sendMessage, readyState } = useWebSocket("ws://10.0.0.73:42069");
+    const { sendMessage, readyState } = useWebSocket("ws://localhost:42069");
 
     function sendMessageForm(e: React.FormEvent) {
         e.preventDefault();
