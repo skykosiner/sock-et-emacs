@@ -1,3 +1,4 @@
+from typing import Callable, Dict
 import requests
 import time
 from dataclasses import dataclass
@@ -14,19 +15,18 @@ class Light:
 
 class HomeAssistant:
     _lights: list[Light]
+    headers: Dict[str, str]
 
     def __init__(self, url: str, token: str) -> None:
         self.url = url
-        self.token = token
+        self.headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
         self._fetch_devices()
 
     def _fetch_devices(self) -> None:
-        headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
-        }
-
-        resp = requests.get(f"{self.url}/api/states", headers=headers)
+        resp = requests.get(f"{self.url}/api/states", headers=self.headers)
         assert resp.status_code == 200, "it's so over didn't get 200 status from home assistant"
 
         self._lights = [
@@ -47,33 +47,39 @@ class HomeAssistant:
         )
 
     def _toggle_light_power(self, entity_id: str) -> None:
-        headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
-        }
-
         data = {
             "entity_id": entity_id
         }
 
-        resp = requests.post(f"{self.url}/api/services/light/toggle", headers=headers, json=data)
+        resp = requests.post(f"{self.url}/api/services/light/toggle", headers=self.headers, json=data)
         assert resp.status_code == 200, "Couldn't change the state of ceiling lights, it's so over"
 
+    def _get_current_light_state(self, entity_id: str) -> Light:
+        resp = requests.get(f"{self.url}/api/states/{entity_id}", headers=self.headers)
+        assert resp.status_code == 200, f"Couldn't fetch the state of a light. It's joever. {resp=}"
+        return self._create_light(resp.json())
+
     def toggle_ceiling_lights(self) -> None:
+        state_to_bool: Callable[[str], bool] = lambda x: True if x == "on" else False
+        old_light_state: Dict[str, Light] = {}
         spot_lights = [light for light in self._lights if "hue_ambiance_spot" in light.entity_id]
 
         for _ in range(10):
             for light in spot_lights:
+                old_light_state[light.entity_id] = light
                 self._toggle_light_power(light.entity_id)
             time.sleep(1)
 
+        # Check each light if it's state is not the same it was before then set it to that
+        for light in spot_lights:
+            old_state = state_to_bool(old_light_state[light.entity_id].state)
+            current_state = state_to_bool(self._get_current_light_state(light.entity_id).state)
+
+            if current_state != old_state:
+                self._toggle_light_power(light.entity_id)
+
     def set_lights_red(self) -> None:
         old_ligth_state: list[Light] = []
-        headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
-        }
-
         for light in self._lights:
             if (light.name != "studio" and light.entity_id != "light.bedroom") and (light.rgb_color or light.hs_color):
                 old_ligth_state.append(light)
@@ -82,7 +88,7 @@ class HomeAssistant:
                     "rgb_color": [255, 0, 0],
                 }
 
-                resp = requests.post(f"{self.url}/api/services/light/turn_on", headers=headers, json=data)
+                resp = requests.post(f"{self.url}/api/services/light/turn_on", headers=self.headers, json=data)
                 assert resp.status_code == 200, "Couldn't change light color to red :("
         time.sleep(5)
         for light in old_ligth_state:
@@ -92,5 +98,5 @@ class HomeAssistant:
               }
 
               service = "turn_on" if light.state == "on" else "turn_off"
-              resp = requests.post(f"{self.url}/api/services/light/{service}", headers=headers, json=data)
+              resp = requests.post(f"{self.url}/api/services/light/{service}", headers=self.headers, json=data)
               assert resp.status_code == 200, "Couldn't change light color to red :("
