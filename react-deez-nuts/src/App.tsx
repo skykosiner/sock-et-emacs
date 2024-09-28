@@ -9,10 +9,10 @@ export default function App(): JSX.Element {
     ]
 
     const buttonInfo: { [key: string]: string } = {
-        ["Flicker Lights"]: "http://localhost:8081/ceiling-lights-toggle",
-        ["Turn Me On 😳"]: "http://localhost:8081/ligths-red",
-        ["ELVIS"]: "http://localhost:8081/elvis",
-        ["That's What She Said"]: "http://localhost:8081/thats-what-she-said",
+        ["Flicker Lights"]: "http://10.0.0.73:8081/ceiling-lights-toggle",
+        ["Turn Me On 😳"]: "http://10.0.0.73:8081/ligths-red",
+        ["ELVIS"]: "http://10.0.0.73:8081/elvis",
+        ["That's What She Said"]: "http://10.0.0.73:8081/thats-what-she-said",
     }
 
     function buttonClickMeDaddy(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
