@@ -5,7 +5,7 @@ import dotenv
 
 from homeassitant import HomeAssistant
 from command import Command
-from flask import Flask
+from flask import Flask, jsonify
 from get_data import get_data
 from message import CommandType, Message
 from system_command import SystemCommand
@@ -114,18 +114,18 @@ async def main():
     # TODO: There must be a better way to define these routes then putting them all in the main function, it looks ugly
     @app.route("/elvis")
     def elvis():
-        asyncio.ensure_future(non_ws_sytem_commands["elvis"].add(Message(CommandType.elvis, "")), loop=current_loop)
-        return ""
+         asyncio.ensure_future(non_ws_sytem_commands["elvis"].add(Message(CommandType.elvis, "")), loop=current_loop)
+         return jsonify({}), 204
 
     @app.route("/ceiling-lights-toggle")
     def ceiling_lights_toggle():
          home_assistant.toggle_ceiling_lights()
-         return ""
+         return jsonify({}), 204
 
     @app.route("/lights-red")
     def lights_red():
         home_assistant.set_lights_red()
-        return ""
+        return jsonify({}), 204
 
     while True:
      await asyncio.sleep(1)  # Keep the event loop runnin:w

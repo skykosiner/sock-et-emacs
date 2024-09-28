@@ -3,11 +3,35 @@ import NewMessage from "./Components/NewMessage";
 
 export default function App(): JSX.Element {
     const [showHelp, setShowHelp] = useState<boolean>(false);
-
     const vimCommands = [
         "dd", "gg", "G", "h", "j", "k", "l", "o", "O",
         "zz", ">>", "<<", "_", "v", "V", "A", "I", "J", "u",
     ]
+
+    const buttonInfo: { [key: string]: string } = {
+        ["Flicker Lights"]: "http://localhost:8081/ceiling-lights-toggle",
+        ["Turn Me On 😳"]: "http://localhost:8081/ligths-red",
+        ["ELVIS"]: "http://localhost:8081/elvis",
+        ["That's What She Said"]: "http://localhost:8081/thats-what-she-said",
+    }
+
+    function buttonClickMeDaddy(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        e.preventDefault();
+        const textVaule = e.currentTarget.innerText;
+        const requestURL = buttonInfo[textVaule];
+
+        if (requestURL) {
+            fetch(requestURL, { method: "GET" })
+                .then(response => {
+                    if (!response.ok && response.status !== 204) {
+                        throw new Error('Network response was not ok');
+                    }
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+    }
 
     return (
         <div className="center">
@@ -15,9 +39,10 @@ export default function App(): JSX.Element {
                 <h1 style={{ textAlign: "center" }}>Control Me Daddy</h1>
 
                 <div className="buttons">
-                    <a>Flicker Ligths</a>
-                    <a>Turn Me On 😳</a>
-                    <a>That's What She Said</a>
+                    <button onClick={buttonClickMeDaddy}>Flicker Lights</button>
+                    <button onClick={buttonClickMeDaddy}>Turn Me On 😳</button>
+                    <button onClick={buttonClickMeDaddy}>ELVIS</button>
+                    <button onClick={buttonClickMeDaddy}>That's What She Said</button>
                     <button onClick={() => setShowHelp(!showHelp)}>Message Commands - Help {showHelp && <p>Hide</p>}</button>
                 </div>
 
@@ -47,6 +72,6 @@ export default function App(): JSX.Element {
 
                 <NewMessage />
             </div>
-        </div>
+        </div >
     );
 }
