@@ -52,7 +52,7 @@ class HomeAssistant:
         }
 
         resp = requests.post(f"{self.url}/api/services/light/toggle", headers=self.headers, json=data)
-        assert resp.status_code == 200, "Couldn't change the state of ceiling lights, it's so over"
+        assert resp.status_code == 200, f"Couldn't change the state of ceiling lights, it's so over {resp=}"
 
     def _get_current_light_state(self, entity_id: str) -> Light:
         resp = requests.get(f"{self.url}/api/states/{entity_id}", headers=self.headers)
@@ -89,7 +89,7 @@ class HomeAssistant:
                 }
 
                 resp = requests.post(f"{self.url}/api/services/light/turn_on", headers=self.headers, json=data)
-                assert resp.status_code == 200, "Couldn't change light color to red :("
+                assert resp.status_code == 200, f"Couldn't change light color to red :( {resp=}"
         time.sleep(5)
         for light in old_ligth_state:
               data = {
@@ -99,4 +99,4 @@ class HomeAssistant:
 
               service = "turn_on" if light.state == "on" else "turn_off"
               resp = requests.post(f"{self.url}/api/services/light/{service}", headers=self.headers, json=data)
-              assert resp.status_code == 200, "Couldn't change light color to red :("
+              assert resp.status_code == 200, f"Couldn't change light color to red :( {resp=}"
