@@ -3,6 +3,8 @@ import NewMessage from "./Components/NewMessage";
 
 export default function App(): JSX.Element {
     const [showHelp, setShowHelp] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>("");
+
     const vimCommands = [
         "dd", "gg", "G", "h", "j", "k", "l", "o", "O",
         "zz", ">>", "<<", "_", "v", "V", "A", "I", "J", "u",
@@ -24,11 +26,12 @@ export default function App(): JSX.Element {
             fetch(requestURL, { method: "GET" })
                 .then(response => {
                     if (!response.ok && response.status !== 204) {
-                        throw new Error('Network response was not ok');
+                        setMessage("Response from server wasn't good, it's joeever");
                     }
                 })
                 .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
+                    console.error("There was a problem with the fetch operation:", error);
+                    setMessage("Response from server wasn't good, it's joeever");
                 });
         }
     }
@@ -71,7 +74,9 @@ export default function App(): JSX.Element {
                 )}
 
                 <NewMessage />
+
+                {message && <p>{message}</p>}
             </div>
-        </div >
+        </div>
     );
 }
