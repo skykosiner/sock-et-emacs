@@ -6,6 +6,7 @@ import dotenv
 from homeassitant import HomeAssistant
 from command import Command
 from flask import Flask, jsonify
+from flask_cors import CORS
 from get_data import get_data
 from message import CommandType, Message
 from system_command import SystemCommand
@@ -82,6 +83,8 @@ async def main():
     app = Flask(__name__)
     start_in_thread(lambda: app.run("127.0.0.1", 8081))
 
+    CORS(app, origins="*")
+
     @ee.on("emit-ws")
     def emit_ws(message: str) -> None:
         ws.send_text(message)
@@ -112,18 +115,20 @@ async def main():
                 asyncio.ensure_future(command.add(message), loop=current_loop)
 
     # TODO: There must be a better way to define these routes then putting them all in the main function, it looks ugly
-    @app.route("/elvis")
+    @app.route("/api/elvis")
     def elvis():
          asyncio.ensure_future(non_ws_sytem_commands["elvis"].add(Message(CommandType.elvis, "")), loop=current_loop)
          return jsonify({}), 204
 
-    @app.route("/ceiling-lights-toggle")
+    @app.route("/api/ceiling-lights-toggle")
     def ceiling_lights_toggle():
-         home_assistant.toggle_ceiling_lights()
-         return jsonify({}), 204
+        print("f\033[34mRurning toggle ceiling lights.\033[0m")
+        home_assistant.toggle_ceiling_lights()
+        return jsonify({}), 204
 
-    @app.route("/lights-red")
+    @app.route("/api/lights-red")
     def lights_red():
+        print("\033[34mSetting lights to red.\033[0m")
         home_assistant.set_lights_red()
         return jsonify({}), 204
 
