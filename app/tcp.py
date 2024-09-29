@@ -3,6 +3,7 @@ from socketserver import StreamRequestHandler, TCPServer
 
 active_connections: list[socket.socket] = []
 
+
 class EchoRequestHandler(StreamRequestHandler):
     def handle(self):
         active_connections.append(self.request)
@@ -19,6 +20,7 @@ class EchoRequestHandler(StreamRequestHandler):
         finally:
             # Remove the connection when done
             active_connections.remove(self.request)
+
 
 class TCP(TCPServer):
     def __init__(self, server_address, handler_class=EchoRequestHandler):

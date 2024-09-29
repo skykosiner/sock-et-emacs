@@ -4,6 +4,7 @@ from pyee.asyncio import AsyncIOEventEmitter
 
 from utils import current_vim_color_scheme
 
+
 class VimColorScheme:
     stop_time: float = 0
     timer: int = 5

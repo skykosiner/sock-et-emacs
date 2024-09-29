@@ -5,6 +5,7 @@
 import os
 from message import CommandType
 
+
 class Command:
     _type_idx = 0
     _data_idx = 1
@@ -26,6 +27,6 @@ class Command:
             print("\033[31mIt's Joever, data is over 127.\033[0m")
             os.error(-1)
 
-        self.buffer[self._data_idx:self._data_idx+len(data)] = data
+        self.buffer[self._data_idx : self._data_idx + len(data)] = data
 
         return self

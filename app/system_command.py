@@ -3,8 +3,11 @@ import asyncio
 from pyee.asyncio import AsyncIOEventEmitter
 from message import Message
 
+
 class SystemCommand:
-    def __init__(self, start_command: str, stop_command: str, timer: int, ee: AsyncIOEventEmitter) -> None:
+    def __init__(
+        self, start_command: str, stop_command: str, timer: int, ee: AsyncIOEventEmitter
+    ) -> None:
         self.start_command = start_command
         self.stop_command = stop_command
         self.timer = timer

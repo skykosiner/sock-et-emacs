@@ -1,5 +1,6 @@
 - [x] Better logging system
 - [x] Some sort of que and add like 5 seconds in between each command
 - [x] Add in some more system commands
-- [ ] Change font in terminal for 30 seconds
+- [x] Change font in terminal for 10 seconds
 - [x] Change vim color scheme for 5 seconds
+- [ ] Send some sort of notice of what's happend to vim or to my computer in general?

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
+
 class CommandType(Enum):
     vim_insert = 0
     vim_after = 1
@@ -12,6 +13,7 @@ class CommandType(Enum):
 
     def __index__(self):
         return self.value
+
 
 @dataclass
 class Message:

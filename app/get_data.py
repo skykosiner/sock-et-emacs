@@ -1,5 +1,6 @@
 from message import CommandType, Message
 
+
 def get_data(data: Message) -> bytes:
     type = data.command
     out = ""
@@ -11,6 +12,5 @@ def get_data(data: Message) -> bytes:
             out = f"norm a{data.message}"
         case CommandType.vim_command:
             out = f"norm {data.message}"
-
 
     return bytes(out, "ascii")

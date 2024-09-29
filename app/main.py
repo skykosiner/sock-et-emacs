@@ -147,10 +147,15 @@ async def main():
 
     @ee.on("change-font")
     def change_font(font: str) -> None:
-        buffer =(
+        buffer = (
             command.reset()
             .set_type(CommandType.change_font)
-            .set_data(bytes(f'silent !sed -i "s/font_family .*/font_family {font}/g" ~/.config/kitty/kitty.conf && xdotool key ctrl+shift+F5', "ascii"))
+            .set_data(
+                bytes(
+                    f'silent !sed -i "s/font_family .*/font_family {font}/g" ~/.config/kitty/kitty.conf && xdotool key ctrl+shift+F5',
+                    "ascii",
+                )
+            )
             .buffer
         )
         tcp.send_all(buffer)
@@ -218,7 +223,9 @@ async def main():
         ]
 
         random_color_scheme = random.choice(colorschemes)
-        asyncio.ensure_future(VimColorScheme(random_color_scheme, ee).add(), loop=current_loop)
+        asyncio.ensure_future(
+            VimColorScheme(random_color_scheme, ee).add(), loop=current_loop
+        )
         return jsonify({}), 204
 
     @app.route("/api/change-font")
