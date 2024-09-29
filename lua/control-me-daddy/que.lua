@@ -5,7 +5,8 @@ CommandType = {
     vim_command = 2,
     vim_colos = 3,
     system_command = 4,
-    elvis = 5
+    elvis = 5,
+    change_font = 6
 }
 
 ---@class Message

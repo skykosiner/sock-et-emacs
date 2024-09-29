@@ -1,5 +1,4 @@
 import { WebSocket, WebSocketServer } from "ws";
-
 const connections: Array<WebSocket> = [];
 
 const ws = new WebSocketServer({ port: 42069 });

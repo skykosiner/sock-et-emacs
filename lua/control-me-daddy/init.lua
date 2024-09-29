@@ -8,7 +8,6 @@ local M = {}
 local function process_que()
     while command_que.length > 0 do
         local message = command_que:deque()
-
         if message then
             vim.cmd(message.message)
         end

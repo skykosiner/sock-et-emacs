@@ -13,7 +13,7 @@ export default function App(): JSX.Element {
     const buttonInfo: { [key: string]: string } = {
         ["Flicker Lights"]: "/api/ceiling-lights-toggle",
         ["Turn Me On 😳"]: "/api/ligths-red",
-        ["Random Vim Color Scheme"]: "/api/change_vim_color",
+        ["Random Vim Color Scheme"]: "/api/change-vim-color",
         ["ELVIS"]: "/api/elvis",
         ["That's What She Said"]: "/api/thats-what-she-said",
     }

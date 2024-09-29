@@ -8,6 +8,7 @@ class CommandType(Enum):
     vim_colors = 3
     system_command = 4
     elvis = 5
+    change_font = 6
 
     def __index__(self):
         return self.value

@@ -4,6 +4,7 @@ import websocket
 import dotenv
 import random
 
+from change_font import ChangeFontRandom
 from vim_colorscheme import VimColorScheme
 from homeassitant import HomeAssistant
 from command import Command
@@ -135,7 +136,6 @@ async def main():
 
     @ee.on("vim-color")
     def vim_color(color: str) -> None:
-        print(f"\033[32mChanging vim colorscheme too {color}\033[0m")
         buffer = (
             command.reset()
             .set_type(CommandType.vim_colors)
@@ -143,9 +143,20 @@ async def main():
             .buffer
         )
         tcp.send_all(buffer)
+        print(f"\033[32mChanging vim colorscheme too {color}\033[0m")
+
+    @ee.on("change-font")
+    def change_font(font: str) -> None:
+        buffer =(
+            command.reset()
+            .set_type(CommandType.change_font)
+            .set_data(bytes(f'silent !sed -i "s/font_family .*/font_family {font}/g" ~/.config/kitty/kitty.conf && xdotool key ctrl+shift+F5', "ascii"))
+            .buffer
+        )
+        tcp.send_all(buffer)
 
     # TODO: There must be a better way to define these routes then putting them all in the main function, it looks ugly
-    @app.route("/api/change_vim_color")
+    @app.route("/api/change-vim-color")
     def change_vim_color():
         colorschemes = [
             "ayu",
@@ -208,6 +219,11 @@ async def main():
 
         random_color_scheme = random.choice(colorschemes)
         asyncio.ensure_future(VimColorScheme(random_color_scheme, ee).add(), loop=current_loop)
+        return jsonify({}), 204
+
+    @app.route("/api/change-font")
+    def change_font_route():
+        asyncio.ensure_future(ChangeFontRandom(ee).add(), loop=current_loop)
         return jsonify({}), 204
 
     @app.route("/api/elvis")

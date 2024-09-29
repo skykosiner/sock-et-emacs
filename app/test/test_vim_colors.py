@@ -1,8 +1,7 @@
 import sys
-
-from app import utils
 sys.path.append("..")
 
+from app import utils
 import unittest
 
 class TestVimColor(unittest.TestCase):

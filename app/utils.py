@@ -19,3 +19,10 @@ def current_vim_color_scheme() -> str:
         last_line = f.readlines()[-1]
         color = re.findall(r'"[^"]+"', last_line)[0]
     return color.strip('"')
+
+def current_font_kitty() -> str:
+    font: str = ""
+    with open("/home/sky/.config/kitty/kitty.conf") as f:
+        font_line = f.readlines()[2].split(" ")
+        font = " ".join([line for line in font_line if "font_family" not in line])
+    return font.replace("\n", "")
