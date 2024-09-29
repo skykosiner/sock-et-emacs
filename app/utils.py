@@ -1,3 +1,4 @@
+import re
 import subprocess
 import threading
 
@@ -11,3 +12,10 @@ def start_in_thread(target, daemon=True):
     thread.daemon = daemon
     thread.start()
     return thread
+
+def current_vim_color_scheme() -> str:
+    color: str = ""
+    with open("/home/sky/.config/nvim/after/plugin/colors.lua") as f:
+        last_line = f.readlines()[-1]
+        color = re.findall(r'"[^"]+"', last_line)[0]
+    return color.strip('"')

@@ -31,5 +31,4 @@ class SystemCommand:
             await asyncio.sleep(self.timer)
             self.ee.emit("system-command", self.stop_command, msg)
 
-        # Schedule the task
         self.task = asyncio.create_task(timer_task())

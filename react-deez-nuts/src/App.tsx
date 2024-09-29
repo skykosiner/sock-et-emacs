@@ -13,6 +13,7 @@ export default function App(): JSX.Element {
     const buttonInfo: { [key: string]: string } = {
         ["Flicker Lights"]: "/api/ceiling-lights-toggle",
         ["Turn Me On 😳"]: "/api/ligths-red",
+        ["Random Vim Color Scheme"]: "/api/change_vim_color",
         ["ELVIS"]: "/api/elvis",
         ["That's What She Said"]: "/api/thats-what-she-said",
     }
@@ -44,6 +45,7 @@ export default function App(): JSX.Element {
                 <div className="buttons">
                     <button onClick={buttonClickMeDaddy}>Flicker Lights</button>
                     <button onClick={buttonClickMeDaddy}>Turn Me On 😳</button>
+                    <button onClick={buttonClickMeDaddy}>Random Vim Color Scheme</button>
                     <button onClick={buttonClickMeDaddy}>ELVIS</button>
                     <button onClick={buttonClickMeDaddy}>That's What She Said</button>
                     <button onClick={() => setShowHelp(!showHelp)}>Message Commands - Help {showHelp && <p>Hide</p>}</button>

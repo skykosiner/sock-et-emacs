@@ -3,8 +3,9 @@ CommandType = {
     vim_insert = 0,
     vim_after = 1,
     vim_command = 2,
-    system_command = 3,
-    elvis = 4
+    vim_colos = 3,
+    system_command = 4,
+    elvis = 5
 }
 
 ---@class Message

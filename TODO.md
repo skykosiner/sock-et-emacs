@@ -2,3 +2,4 @@
 - [x] Some sort of que and add like 5 seconds in between each command
 - [ ] Add in some more system commands
 - [ ] Change font in terminal
+- [ ] Change vim color scheme for 5 seconds
