@@ -1,9 +1,12 @@
 import requests
 import time
 
+from tcp import TCP
+from command import Command
+from message import CommandType
+from get_status import get_status
 from dataclasses import dataclass
 from typing import Callable, Dict
-
 
 @dataclass
 class Light:
@@ -19,7 +22,9 @@ class HomeAssistant:
     _lights: list[Light]
     headers: Dict[str, str]
 
-    def __init__(self, url: str, token: str) -> None:
+    def __init__(self, url: str, token: str, tcp: TCP) -> None:
+        self.command = Command()
+        self.tcp = tcp
         self.url = url
         self.headers = {
             "Authorization": f"Bearer {token}",
@@ -68,6 +73,15 @@ class HomeAssistant:
         return self._create_light(resp.json())
 
     def toggle_ceiling_lights(self) -> None:
+        buffer = (
+            self.command.reset()
+            .set_type(CommandType.home_assistant)
+            .set_status(get_status(type=CommandType.home_assistant, home_assistant_data="Flash Ceiling Lights"))
+            .buffer
+        )
+
+        self.tcp.send_all(buffer)
+
         state_to_bool: Callable[[str], bool] = lambda x: True if x == "on" else False
         old_light_state: Dict[str, Light] = {}
         spot_lights = [
@@ -110,7 +124,17 @@ class HomeAssistant:
                 assert (
                     resp.status_code == 200
                 ), f"Couldn't change light color to red :( {resp=}"
+
+        buffer = (
+            self.command.reset()
+            .set_type(CommandType.home_assistant)
+            .set_status(get_status(type=CommandType.home_assistant, home_assistant_data="Setting Lights To Red"))
+            .buffer
+        )
+
+        self.tcp.send_all(buffer)
         time.sleep(5)
+
         for light in old_ligth_state:
             data = {
                 "entity_id": light.entity_id,
@@ -140,3 +164,12 @@ class HomeAssistant:
         assert (
             resp.status_code == 200
         ), f"Couldn't that's what she said, it's joever.{resp=}"
+
+        buffer = (
+            self.command.reset()
+            .set_type(CommandType.home_assistant)
+            .set_status(get_status(type=CommandType.home_assistant, home_assistant_data="That's What She Said"))
+            .buffer
+        )
+
+        self.tcp.send_all(buffer)

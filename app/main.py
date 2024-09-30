@@ -73,11 +73,11 @@ async def main():
         print("Url and or token not found, it's joever")
         exit(0x45)
 
-    home_assistant = HomeAssistant(url, token)
-
     current_loop = asyncio.get_event_loop()
     tcp = TCP(("localhost", 8080), EchoRequestHandler)
     start_in_thread(tcp.serve_forever)
+
+    home_assistant = HomeAssistant(url, token, tcp)
 
     # ws = websocket.WebSocketApp("wss://skykosiner.com:8080", on_message=new_msg)
     ws = websocket.WebSocketApp("ws://127.0.0.1:42069", on_message=new_msg)

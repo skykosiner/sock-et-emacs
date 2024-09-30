@@ -10,6 +10,7 @@ class CommandType(Enum):
     system_command = 4
     elvis = 5
     change_font = 6
+    home_assistant = 7
 
     def __index__(self):
         return self.value

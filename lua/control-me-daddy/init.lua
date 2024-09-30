@@ -15,7 +15,6 @@ local function process_que()
         if message then
             require("statusline.status_info").set_status_custom(message.status)
             vim.cmd(message.message)
-
             last_processed_time = now
         end
     end

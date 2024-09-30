@@ -1,3 +1,4 @@
+from typing import assert_never
 from message import CommandType, Message
 
 
@@ -30,3 +31,5 @@ def get_data(
                 f"silent !sed -i 's/font_family .*/font_family {font}/g' ~/.config/kitty/kitty.conf && xdotool key ctrl+shift+F5",
                 "ascii",
             )
+        case CommandType.home_assistant:
+            assert False

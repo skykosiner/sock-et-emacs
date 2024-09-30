@@ -6,6 +6,7 @@ def get_status(
     msg: Message | None = None,
     color: str | None = None,
     font: str | None = None,
+    home_assistant_data: str | None = None,
 ) -> bytes:
     match type:
         case CommandType.vim_insert | CommandType.vim_after:
@@ -25,3 +26,6 @@ def get_status(
         case CommandType.change_font:
             assert font is not None
             return bytes(f"Setting font to: {font}", "ascii")
+        case CommandType.home_assistant:
+            assert home_assistant_data is not None
+            return bytes(f"HomeAssistant ran: {home_assistant_data}", "ascii")
