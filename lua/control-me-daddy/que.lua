@@ -10,8 +10,9 @@ CommandType = {
 }
 
 ---@class Message
----@field message string
 ---@field command CommandType
+---@field status string
+---@field message string
 
 ---@class Node
 ---@field value Message

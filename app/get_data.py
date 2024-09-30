@@ -20,7 +20,7 @@ def get_data(
             return bytes(f"norm {msg.message}", "ascii")
         case CommandType.vim_colors:
             assert color is not None, "COLOR IS NONE??"
-            return bytes(f"silent colorschehme {color}", "ascii")
+            return bytes(f"silent colorscheme {color}", "ascii")
         case CommandType.system_command | CommandType.elvis:
             assert cmd is not None, "Command is none it's over."
             return bytes(f"silent! !{cmd}", "ascii")

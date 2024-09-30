@@ -1,4 +1,4 @@
-#                1                  1-52               52-256
+#                1                  2-52               53-256
 #     +-----------------------+--------------+------------------------+
 #     |         type          /    status    /          data          |
 #     +-----------------------+--------------+------------------------+
@@ -8,7 +8,7 @@ from message import CommandType
 class Command:
     _type_idx = 0
     _status_idx = 1
-    _data_idx = 52
+    _data_idx = 53
     buffer: bytearray
 
     def __init__(self) -> None:

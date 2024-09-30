@@ -71,6 +71,7 @@ def setup_listen_events(
             .set_data(get_data(CommandType.vim_colors, color=color))
             .buffer
         )
+
         tcp.send_all(buffer)
         print(f"\033[32mChanging vim colorscheme too {color}\033[0m")
 

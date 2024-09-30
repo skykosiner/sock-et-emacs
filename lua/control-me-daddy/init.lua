@@ -5,12 +5,24 @@ local command_que = que:new()
 
 local M = {}
 
+local last_processed_time = vim.loop.now()
+local timeout_ms = 5000
+
 local function process_que()
+    local now = vim.loop.now()
     while command_que.length > 0 do
         local message = command_que:deque()
         if message then
+            require("statusline.status_info").set_status_custom(message.status)
             vim.cmd(message.message)
+
+            last_processed_time = now
         end
+    end
+
+    -- If the queue is empty and it's been more than 5 seconds since the last message
+    if command_que.length == 0 and (now - last_processed_time) >= timeout_ms then
+        require("statusline.status_info").set_status_custom("")
     end
 end
 
@@ -28,10 +40,13 @@ function M.START()
                 ---@type Message
                 local message = {
                     command = string.byte(chunk, 1),
-                    message = string.sub(chunk, 2)
+                    status = string.gsub(string.sub(chunk, 2, 53), "%z", ""),
+                    message = string.gsub(string.sub(chunk, 53, 256), "%z", ""),
                 }
 
                 command_que:enque(message)
+
+                last_processed_time = vim.loop.now()
             end
         end))
 

@@ -16,7 +16,7 @@ def setup_routes(
     home_assistant: HomeAssistant,
 ):
     non_ws_sytem_commands = {
-        "elvis": SystemCommand("/asdfhome/sky/.local/bin/elvis", "", 0, ee),
+        "elvis": SystemCommand("/home/sky/.local/bin/elvis", "", 0, ee),
     }
 
     @app.route("/api/change-vim-color")
