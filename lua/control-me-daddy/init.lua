@@ -45,7 +45,6 @@ function M.START()
                 }
 
                 command_que:enque(message)
-
                 last_processed_time = vim.loop.now()
             end
         end))

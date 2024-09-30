@@ -3,4 +3,4 @@
 - [x] Add in some more system commands
 - [x] Change font in terminal for 10 seconds
 - [x] Change vim color scheme for 5 seconds
-- [ ] Send some sort of notice of what's happend to vim or to my computer in general?
+- [x] Send some sort of notice of what's happend to vim or to my computer in general?

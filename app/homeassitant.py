@@ -126,3 +126,17 @@ class HomeAssistant:
             assert (
                 resp.status_code == 200
             ), f"Couldn't change light color to red :( {resp=}"
+
+    def thats_what_she_said(self) -> None:
+        data = {
+            "entity_id": "media_player.skys_room_display",
+            "message": "That's what she said"
+        }
+        resp = requests.post(
+            f"{self.url}/api/services/tts/google_translate_say",
+            headers=self.headers,
+            json=data,
+        )
+        assert (
+            resp.status_code == 200
+        ), f"Couldn't that's what she said, it's joever.{resp=}"

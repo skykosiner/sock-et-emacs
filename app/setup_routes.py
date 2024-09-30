@@ -50,3 +50,9 @@ def setup_routes(
         print("\033[34mSetting lights to red.\033[0m")
         home_assistant.set_lights_red()
         return jsonify({}), 204
+
+    @app.route("/api/thats-what-she-said")
+    def thats_what_she_said():
+        print("\033[34mThat's what she said.\033[0m")
+        home_assistant.thats_what_she_said()
+        return jsonify({}), 204
