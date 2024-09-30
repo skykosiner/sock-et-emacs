@@ -1,6 +1,12 @@
 from message import CommandType, Message
 
-def get_status(type: CommandType, msg: Message | None = None, color: str | None = None, font: str | None = None) -> bytes:
+
+def get_status(
+    type: CommandType,
+    msg: Message | None = None,
+    color: str | None = None,
+    font: str | None = None,
+) -> bytes:
     match type:
         case CommandType.vim_insert | CommandType.vim_after:
             assert msg is not None

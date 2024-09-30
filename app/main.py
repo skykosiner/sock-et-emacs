@@ -1,27 +1,21 @@
-import asyncio
 import os
-import websocket
 import dotenv
-import random
+import asyncio
+import websocket
 
-from change_font import ChangeFontRandom
-from vim_colorscheme import VimColorScheme
-from homeassitant import HomeAssistant
-from command import Command
-from flask import Flask, jsonify
+from flask import Flask
 from flask_cors import CORS
-from get_data import get_data
-from message import CommandType, Message
-from system_command import SystemCommand
+from setup_routes import setup_routes
+from homeassitant import HomeAssistant
 from tcp import TCP, EchoRequestHandler
+from system_command import SystemCommand
+from message import CommandType, Message
 from pyee.asyncio import AsyncIOEventEmitter
-
+from setup_listen_events import setup_listen_events
 from utils import get_main_screen, start_in_thread
-from vim import validate_vim_command
 
 ee = AsyncIOEventEmitter()
 main_screen = get_main_screen()
-command = Command()
 
 typeMessages = {
     "!vi": CommandType.vim_insert,
@@ -49,10 +43,6 @@ system_commands = {
     ),
     "!i3 workspace": SystemCommand("i3 workspace 69", "", 0, ee),
     "!change background": SystemCommand("change_background_random", "", 0, ee),
-}
-
-non_ws_sytem_commands = {
-    "elvis": SystemCommand("/home/sky/.local/bin/elvis", "", 0, ee),
 }
 
 
@@ -98,160 +88,8 @@ async def main():
 
     CORS(app, origins="*")
 
-    @ee.on("emit-ws")
-    def emit_ws(message: str) -> None:
-        ws.send_text(message)
-
-    @ee.on("vim")
-    def vim_command(message: Message, tcp=tcp) -> None:
-        message.message = message.message_without_command()
-        valid = validate_vim_command(message)
-        if not valid.is_good:
-            ee.emit("emit-ws", valid.error)
-            return
-
-        buffer = (
-            command.reset().set_type(message.command).set_data(get_data(message)).buffer
-        )
-        tcp.send_all(buffer)
-        print(f"\033[32mSendning vim {message.command} with {message.message}\033[0m")
-
-    @ee.on("system-command")
-    def system_command(cmd: str, message: Message, tcp=tcp) -> None:
-        buffer = (
-            command.reset()
-            .set_type(message.command)
-            .set_data(bytes(f"silent! !{cmd}", "ascii"))
-            .buffer
-        )
-        tcp.send_all(buffer)
-        print(f"\033[33mSending system command {cmd}.\033[0m")
-
-    @ee.on("start-sys")
-    def start_sys(message: Message) -> None:
-        if message.command == CommandType.system_command:
-            command = system_commands[message.message]
-            if command:
-                asyncio.ensure_future(command.add(message), loop=current_loop)
-
-    @ee.on("vim-color")
-    def vim_color(color: str) -> None:
-        buffer = (
-            command.reset()
-            .set_type(CommandType.vim_colors)
-            .set_data(bytes(f"silent colorscheme {color}", "ascii"))
-            .buffer
-        )
-        tcp.send_all(buffer)
-        print(f"\033[32mChanging vim colorscheme too {color}\033[0m")
-
-    @ee.on("change-font")
-    def change_font(font: str) -> None:
-        buffer = (
-            command.reset()
-            .set_type(CommandType.change_font)
-            .set_data(
-                bytes(
-                    f'silent !sed -i "s/font_family .*/font_family {font}/g" ~/.config/kitty/kitty.conf && xdotool key ctrl+shift+F5',
-                    "ascii",
-                )
-            )
-            .buffer
-        )
-        tcp.send_all(buffer)
-
-    # TODO: There must be a better way to define these routes then putting them all in the main function, it looks ugly
-    @app.route("/api/change-vim-color")
-    def change_vim_color():
-        colorschemes = [
-            "ayu",
-            "ayu-dark",
-            "ayu-light",
-            "ayu-mirage",
-            "blue",
-            "carbonfox",
-            "catppuccin",
-            "catppuccin-frappe",
-            "catppuccin-latte",
-            "catppuccin-macchiato",
-            "catppuccin-mocha",
-            "colorbuddy",
-            "darkblue",
-            "dawnfox",
-            "dayfox",
-            "default",
-            "delek",
-            "desert",
-            "duskfox",
-            "elflord",
-            "evening",
-            "gruvbox",
-            "gruvbox-material",
-            "gruvbuddy",
-            "habamax",
-            "industry",
-            "koehler",
-            "lunaperche",
-            "morning",
-            "murphy",
-            "nightfox",
-            "nordfox",
-            "onedark",
-            "pablo",
-            "peachpuff",
-            "quiet",
-            "retrobox",
-            "ron",
-            "rose-pine",
-            "rose-pine-dawn",
-            "rose-pine-main",
-            "rose-pine-moon",
-            "shine",
-            "slate",
-            "sorbet",
-            "terafox",
-            "tokyonight",
-            "tokyonight-day",
-            "tokyonight-moon",
-            "tokyonight-night",
-            "tokyonight-storm",
-            "torte",
-            "vim",
-            "wildcharm",
-            "zaibatsu",
-            "zellner",
-        ]
-
-        random_color_scheme = random.choice(colorschemes)
-        asyncio.ensure_future(
-            VimColorScheme(random_color_scheme, ee).add(), loop=current_loop
-        )
-        return jsonify({}), 204
-
-    @app.route("/api/change-font")
-    def change_font_route():
-        asyncio.ensure_future(ChangeFontRandom(ee).add(), loop=current_loop)
-        return jsonify({}), 204
-
-    @app.route("/api/elvis")
-    def elvis():
-        asyncio.ensure_future(
-            non_ws_sytem_commands["elvis"].add(Message(CommandType.elvis, "")),
-            loop=current_loop,
-        )
-        return jsonify({}), 204
-
-    @app.route("/api/ceiling-lights-toggle")
-    def ceiling_lights_toggle():
-        print("\033[34mRurning toggle ceiling lights.\033[0m")
-        home_assistant.toggle_ceiling_lights()
-        return jsonify({}), 204
-
-    @app.route("/api/lights-red")
-    def lights_red():
-        print("\033[34mSetting lights to red.\033[0m")
-        home_assistant.set_lights_red()
-        return jsonify({}), 204
+    setup_listen_events(ee, ws, tcp, system_commands, current_loop)
+    setup_routes(app, current_loop, ee, home_assistant)
 
     while True:
         await asyncio.sleep(1)

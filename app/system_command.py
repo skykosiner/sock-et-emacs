@@ -1,7 +1,7 @@
 import asyncio
 
-from pyee.asyncio import AsyncIOEventEmitter
 from message import Message
+from pyee.asyncio import AsyncIOEventEmitter
 
 
 class SystemCommand:

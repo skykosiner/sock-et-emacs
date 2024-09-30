@@ -1,10 +1,10 @@
 import asyncio
 import random
-from pyee.asyncio import AsyncIOEventEmitter
-from asyncio.tasks import Task
 import subprocess
 
+from asyncio.tasks import Task
 from utils import current_font_kitty
+from pyee.asyncio import AsyncIOEventEmitter
 
 
 class ChangeFontRandom:

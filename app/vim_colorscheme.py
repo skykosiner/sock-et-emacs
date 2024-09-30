@@ -1,4 +1,5 @@
 import asyncio
+import random
 from asyncio.tasks import Task
 from pyee.asyncio import AsyncIOEventEmitter
 
@@ -31,3 +32,66 @@ class VimColorScheme:
             self.ee.emit("vim-color", self.current)
 
         self.task = asyncio.create_task(timer_task())
+
+
+def random_color() -> str:
+    colorschemes = [
+        "ayu",
+        "ayu-dark",
+        "ayu-light",
+        "ayu-mirage",
+        "blue",
+        "carbonfox",
+        "catppuccin",
+        "catppuccin-frappe",
+        "catppuccin-latte",
+        "catppuccin-macchiato",
+        "catppuccin-mocha",
+        "colorbuddy",
+        "darkblue",
+        "dawnfox",
+        "dayfox",
+        "default",
+        "delek",
+        "desert",
+        "duskfox",
+        "elflord",
+        "evening",
+        "gruvbox",
+        "gruvbox-material",
+        "gruvbuddy",
+        "habamax",
+        "industry",
+        "koehler",
+        "lunaperche",
+        "morning",
+        "murphy",
+        "nightfox",
+        "nordfox",
+        "onedark",
+        "pablo",
+        "peachpuff",
+        "quiet",
+        "retrobox",
+        "ron",
+        "rose-pine",
+        "rose-pine-dawn",
+        "rose-pine-main",
+        "rose-pine-moon",
+        "shine",
+        "slate",
+        "sorbet",
+        "terafox",
+        "tokyonight",
+        "tokyonight-day",
+        "tokyonight-moon",
+        "tokyonight-night",
+        "tokyonight-storm",
+        "torte",
+        "vim",
+        "wildcharm",
+        "zaibatsu",
+        "zellner",
+    ]
+
+    return random.choice(colorschemes)

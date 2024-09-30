@@ -1,7 +1,8 @@
-from typing import Callable, Dict
 import requests
 import time
+
 from dataclasses import dataclass
+from typing import Callable, Dict
 
 
 @dataclass
